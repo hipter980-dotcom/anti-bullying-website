@@ -18,7 +18,7 @@
 
         #app { position: relative; width: 100%; height: 100%; display: flex; }
 
-        /* ================= 🔄 智能横屏提示遮罩 CSS ================= */
+        /* ================= 🔄 智能横屏提示遮罩 ================= */
         #rotate-overlay {
             display: none;
             position: fixed;
@@ -33,42 +33,48 @@
             text-align: center;
             padding: 20px;
         }
-        
-        /* 旋转小动画 */
-        .rotate-icon {
-            font-size: 50px;
-            margin-bottom: 20px;
-            animation: spin 2s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            50% { transform: rotate(90deg); }
-            100% { transform: rotate(0deg); }
+        .rotate-icon { font-size: 50px; margin-bottom: 20px; animation: spin 2s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } 100% { transform: rotate(0deg); } }
+
+        /* 🎥 只有在真正的窄竖屏状态下才会拦截，引导用户横屏使用电脑版效果 */
+        @media (max-aspect-ratio: 1/1) {
+            #rotate-overlay { display: flex; }
         }
 
-        /* 🎥 核心触发逻辑：当屏幕处于竖屏状态（高大于宽）且是小屏幕设备时弹出 */
-        @media (max-aspect-ratio: 1/1) and (max-width: 950px) {
-            #rotate-overlay {
-                display: flex;
-            }
+        /* ================= VIEW CONTAINER (⚖️ 全设备完美等比例物理硬隔离) ================= */
+        .view-container { 
+            position: relative; 
+            flex: 1; 
+            height: 100%; 
+            /* 🌟 极致等比例：左侧内容区永远精准占据 72% 屏幕宽度，绝不溢出，完美复刻电脑排版 */
+            width: 72vw;
+            max-width: 72vw;
+            padding: 3% 4%; 
+            padding-bottom: 70px;
         }
-
-        /* ================= VIEW CONTAINER ================= */
-        .view-container { position: relative; flex: 1; height: 100%; padding-right: 300px; }
         .view {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             opacity: 0; pointer-events: none; 
             transition: opacity 0.4s ease, transform 0.4s ease;
             transform: translateY(15px);
-            padding: 4% 6%; padding-bottom: 60px; 
             display: flex; flex-direction: column;
             overflow-y: auto; 
         }
         .view.active { opacity: 1; pointer-events: auto; z-index: 10; transform: translateY(0); }
         .view::-webkit-scrollbar { width: 0px; }
 
-        /* ================= SVG CIRCULAR NAVIGATION ================= */
-        .side-nav { position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 60vh; aspect-ratio: 1 / 2; z-index: 50; }
+        /* ================= SVG CIRCULAR NAVIGATION (等比例圆盘) ================= */
+        .side-nav { 
+            position: absolute; 
+            /* 🌟 极致等比例：让圆盘区域牢牢锁定在屏幕右侧 28% 宽度空间，高度按比例缩放，绝对不遮挡左边卡片 */
+            right: 0; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            width: 28vw;
+            height: 56vw;
+            max-height: 80vh;
+            z-index: 50; 
+        }
         svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(-5px 5px 15px rgba(0,0,0,0.08)); }
         .nav-item { cursor: pointer; transform-origin: 250px 250px; transition: all 0.3s ease; outline: none; }
         .nav-item path { fill: #ffffff; stroke: #333; stroke-width: 3; transition: all 0.3s ease; }
@@ -84,10 +90,28 @@
         .marquee-text { white-space: nowrap; font-size: 16px; font-weight: bold; animation: scroll-left 18s linear infinite; }
         @keyframes scroll-left { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
 
-        .ai-ball { position: absolute; right: 320px; bottom: 60px; width: 60px; height: 60px; background-color: #fff; border: 2px solid #333; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; cursor: pointer; z-index: 70; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        /* 🌟 AI球位置等比例安全锁定：定格在左侧72%大界面的右下角，无论什么屏幕都一目了然，绝不越界 */
+        .ai-ball { 
+            position: absolute; 
+            left: 65vw; 
+            bottom: 60px; 
+            width: 55px; 
+            height: 55px; 
+            background-color: #fff; 
+            border: 2px solid #333; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-weight: bold; 
+            cursor: pointer; 
+            z-index: 70; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            transition: transform 0.3s; 
+        }
         .ai-ball:hover { transform: scale(1.1); background-color: #e3f2fd; }
         
-        .ai-modal { position: absolute; right: 330px; bottom: 130px; width: 320px; height: 420px; background: #fff; border: 2px solid #2196f3; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 80; display: none; flex-direction: column; overflow: hidden; animation: popUp 0.3s ease-out; }
+        .ai-modal { position: absolute; left: calc(65vw - 250px); bottom: 130px; width: 300px; height: 380px; background: #fff; border: 2px solid #2196f3; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 80; display: none; flex-direction: column; overflow: hidden; animation: popUp 0.3s ease-out; }
         @keyframes popUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .ai-header { background: #2196f3; color: white; padding: 10px 15px; font-weight: bold; display: flex; justify-content: space-between; }
         
@@ -96,62 +120,43 @@
         .msg.user { background: #e3f2fd; color: #0d47a1; align-self: flex-end; border: 1px solid #bbdefb; }
         .msg.bot { background: #fff; color: #333; align-self: flex-start; border: 1px solid #e0e0e0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .msg.loading { background: #eee; color: #888; align-self: flex-start; font-style: italic; animation: pulse 1s infinite alternate; }
-        @keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
 
         .ai-footer { display: flex; padding: 10px; border-top: 2px solid #2196f3; background: #fff; }
         .ai-input-area { flex: 1; display: flex; align-items: center; gap: 8px; }
         .ai-input-area input { flex: 1; padding: 8px; border: 2px solid #ccc; border-radius: 8px; font-size: 13px; outline: none; }
-        .ai-input-area input:focus { border-color: #2196f3; }
         .ai-input-area button { padding: 8px 15px; background: #2196f3; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
         /* ================= INNER PAGES STYLE ================= */
-        .page-title { font-size: clamp(18px, 2.2vw, 24px); border: 2px solid #333; border-radius: 8px; padding: 6px 16px; display: inline-block; margin-bottom: 20px; background: #fff; }
-        .home-title { font-size: clamp(36px, 4.5vw, 65px); border-bottom: 4px solid #333; display: inline-block; padding-bottom: 10px; margin-bottom: 15px; }
-        .home-meaning-box { background: #fff; border: 2px solid #333; border-radius: 8px; padding: 18px 24px; max-width: 85%; margin-bottom: 20px; font-size: clamp(16px, 1.8vw, 20px); line-height: 1.6; border-left: 8px solid #e53935; }
-        .home-meaning-box i { font-weight: bold; color: #b71c1c; font-size: clamp(18px, 2vw, 24px); display: inline-block; margin-bottom: 6px; }
-        .home-desc { font-size: clamp(15px, 1.8vw, 18px); max-width: 80%; line-height: 1.6; color: #555; }
+        .page-title { font-size: clamp(14px, 1.8vw, 22px); border: 2px solid #333; border-radius: 8px; padding: 4px 12px; display: inline-block; margin-bottom: 15px; background: #fff; font-weight: bold; }
+        .home-title { font-size: clamp(28px, 4vw, 55px); border-bottom: 4px solid #333; display: inline-block; padding-bottom: 8px; margin-bottom: 12px; }
+        .home-meaning-box { background: #fff; border: 2px solid #333; border-radius: 8px; padding: 15px 20px; width: 100%; margin-bottom: 15px; font-size: clamp(14px, 1.5vw, 18px); line-height: 1.5; border-left: 8px solid #e53935; }
+        .home-meaning-box i { font-weight: bold; color: #b71c1c; font-size: clamp(16px, 1.8vw, 22px); display: inline-block; margin-bottom: 4px; }
+        .home-desc { font-size: clamp(13px, 1.4vw, 16px); line-height: 1.5; color: #555; }
 
-        .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; width: 100%; max-width: 1100px; padding-bottom: 10px; }
-        .flip-card { background-color: transparent; height: calc(29vh - 10px); perspective: 1000px; outline: none; }
+        /* 🌟 电脑版标准的 3 列卡片网格排版，永远等比例绽放，拒绝变成单列手机样式 */
+        .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; padding-bottom: 5px; }
+        .flip-card { background-color: transparent; height: calc(28vh - 5px); min-height: 110px; perspective: 1000px; outline: none; }
         .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
         .flip-card:hover .flip-card-inner, .flip-card:focus .flip-card-inner, .flip-card.kb-flipped .flip-card-inner { transform: rotateY(180deg); }
-        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; border-radius: 12px; border: 2px solid #333; padding: 12px 14px; }
-        .flip-card-front { background-color: #fff; font-size: clamp(16px, 1.6vw, 19px); font-weight: bold; justify-content: center; align-items: center; transform: rotateY(0deg); z-index: 2; }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; border-radius: 10px; border: 2px solid #333; padding: 8px 10px; }
+        .flip-card-front { background-color: #fff; font-size: clamp(13px, 1.5vw, 17px); font-weight: bold; justify-content: center; align-items: center; transform: rotateY(0deg); z-index: 2; }
         .flip-card-back { background-color: #fff9c4; text-align: left; justify-content: flex-start; align-items: flex-start; transform: rotateY(180deg); overflow-y: auto; }
         .flip-card-back::-webkit-scrollbar { width: 0px; }
-        .card-def-label { font-weight: bold; color: #b71c1c; font-size: 12px; margin-bottom: 2px; border-bottom: 1px dashed #aaa; width: 100%; padding-bottom: 2px; }
-        .card-def-text { font-size: 12px; line-height: 1.35; color: #333; margin-bottom: 6px; }
-        .card-impact-label { font-weight: bold; color: #1b5e20; font-size: 12px; margin-bottom: 2px; border-bottom: 1px dashed #aaa; width: 100%; padding-bottom: 2px; }
+        .card-def-label { font-weight: bold; color: #b71c1c; font-size: 11px; margin-bottom: 1px; border-bottom: 1px dashed #aaa; width: 100%; }
+        .card-def-text { font-size: 11px; line-height: 1.3; color: #333; margin-bottom: 4px; }
+        .card-impact-label { font-weight: bold; color: #1b5e20; font-size: 11px; margin-bottom: 1px; border-bottom: 1px dashed #aaa; width: 100%; }
 
-        .data-content { display: flex; align-items: stretch; gap: 40px; width: 100%; max-width: 1000px; background: #fff; border: 2px solid #333; border-radius: 12px; padding: 25px; }
-        .chart-box-pie { flex: 1; position: relative; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
-        .chart-box-bar { flex: 1.3; position: relative; display: flex; flex-direction: column; justify-content: center; }
-        .chart-sub-title { font-weight: bold; margin-bottom: 10px; font-size: 15px; text-align: center; color: #555; }
+        /* 数据分析与解决方案电脑版结构 */
+        .data-content { display: flex; gap: 20px; width: 100%; background: #fff; border: 2px solid #333; border-radius: 12px; padding: 15px; height: 68vh; }
+        .chart-box-pie { flex: 1; max-width: 35%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .chart-box-bar { flex: 1.8; display: flex; flex-direction: column; justify-content: center; }
+        .chart-sub-title { font-weight: bold; margin-bottom: 5px; font-size: 13px; text-align: center; color: #555; }
 
-        .solution-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 950px; }
-        .sol-box { background: #fff; border: 2px solid #333; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; transition: transform 0.2s; }
-        .sol-box:hover { transform: translateY(-3px); background-color: #f1f8e9; }
-        .sol-box h3 { margin: 0 0 10px 0; font-size: 18px; color: #1b5e20; border-left: 4px solid #4caf50; padding-left: 8px; }
-        .sol-box p { margin: 0; font-size: 14px; line-height: 1.5; color: #555; }
-
-        /* ======================================================== */
-        /* 📱 移动端自适应备用逻辑（当用户横屏时完美展示） */
-        /* ======================================================== */
-        @media (max-width: 950px) {
-            .view-container { padding-right: 0px !important; }
-            .view { padding: 4% 4%; padding-bottom: 100px; }
-            .side-nav { width: 110px !important; height: 220px !important; top: 50% !important; right: 0 !important; transform: translateY(-50%) !important; }
-            .card-grid, .solution-grid, .data-content, .home-meaning-box, .home-desc, .page-title { 
-                max-width: calc(100% - 125px) !important; 
-            }
-            .card-grid, .solution-grid { grid-template-columns: 1fr !important; gap: 16px !important; } 
-            .flip-card { height: 140px !important; }
-            .data-content { flex-direction: column !important; gap: 25px !important; padding: 15px !important; }
-            .chart-box-pie { max-width: 100% !important; }
-            .ai-ball { right: 15px !important; bottom: 55px !important; width: 50px !important; height: 50px !important; font-size: 13px !important; z-index: 90 !important; }
-            .ai-modal { right: 15px !important; bottom: 115px !important; width: calc(100vw - 30px) !important; max-width: 300px !important; z-index: 100 !important; }
-            .marquee-text { font-size: 13px !important; }
-        }
+        /* 🌟 电脑版标准的 3 列解决方案大网格 */
+        .solution-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
+        .sol-box { background: #fff; border: 2px solid #333; border-radius: 10px; padding: 12px 15px; display: flex; flex-direction: column; }
+        .sol-box h3 { margin: 0 0 5px 0; font-size: 15px; color: #1b5e20; border-left: 4px solid #4caf50; padding-left: 6px; }
+        .sol-box p { margin: 0; font-size: 12px; line-height: 1.4; color: #555; }
     </style>
 </head>
 <body>
@@ -159,8 +164,7 @@
 <div id="rotate-overlay">
     <div class="rotate-icon">🔄</div>
     <h3 style="margin: 0 0 10px 0; font-size: 20px;">Landscape Mode Required</h3>
-    <p style="color: #aaa; font-size: 14px; margin: 0 0 5px 0; max-width: 280px; line-height: 1.4;">Please enable auto-rotate and turn your phone sideways for the best experience.</p>
-    <p style="color: #666; font-size: 12px; margin: 0;">（为了获得完整的交互数据看板体验，请横屏使用）</p>
+    <p style="color: #aaa; font-size: 14px; margin: 0; max-width: 280px; line-height: 1.4;">Please turn your phone sideways or enable auto-rotate to enter full desktop dashboard mode.</p>
 </div>
 
 <div id="app">
@@ -187,15 +191,17 @@
     </nav>
 
     <main class="view-container">
+        <!-- View 0: Home -->
         <article class="view active" id="view-0">
             <h1 class="home-title">Anti-Bullying Guide</h1>
             <div class="home-meaning-box">
                 <i>What is Bullying?</i><br>
                 Bullying is unwanted, aggressive behavior among school-aged children that involves a real or perceived power imbalance. The behavior is repeated over time, causing severe physical or psychological distress.
             </div>
-            <p class="home-desc">Welcome to the Anti-Bullying Interactive Guide System.<br><br>You can click directly on the <b>Circular Menu</b> on the right to freely switch between sections and explore vital anti-bullying awareness information.</p>
+            <p class="home-desc">Welcome to the Anti-Bullying Interactive Guide System.<br><br>Click the <b>Circular Menu</b> on the right to freely switch between sections and explore vital information.</p>
         </article>
 
+        <!-- View 1: Types -->
         <section class="view" id="view-1">
             <div class="page-title">Types of Bullying & Their Impacts</div>
             <div class="card-grid">
@@ -204,9 +210,9 @@
                         <div class="flip-card-front">Physical Bullying</div>
                         <div class="flip-card-back">
                             <div class="card-def-label">Definition:</div>
-                            <div class="card-def-text">Pushing, hitting, tripping, taking or damaging someone else's personal belongings.</div>
+                            <div class="card-def-text">Pushing, hitting, tripping, taking or damaging belongings.</div>
                             <div class="card-impact-label">Impact on Victim:</div>
-                            <div class="card-def-text">Causes direct bodily injuries, chronic physical pain, persistent fear of school environments, and severe sleep disturbances.</div>
+                            <div class="card-def-text">Causes direct bodily injuries, chronic pain, and fear of school.</div>
                         </div>
                     </div>
                 </div>
@@ -215,9 +221,9 @@
                         <div class="flip-card-front">Verbal Bullying</div>
                         <div class="flip-card-back">
                             <div class="card-def-label">Definition:</div>
-                            <div class="card-def-text">Teasing, name-calling, insulting, or making malicious threats against someone.</div>
+                            <div class="card-def-text">Teasing, name-calling, insulting, or making malicious threats.</div>
                             <div class="card-impact-label">Impact on Victim:</div>
-                            <div class="card-def-text">Erodes self-esteem, triggers severe academic decline, and develops long-term chronic social anxiety and insecurity.</div>
+                            <div class="card-def-text">Erodes self-esteem and triggers severe academic decline.</div>
                         </div>
                     </div>
                 </div>
@@ -226,9 +232,9 @@
                         <div class="flip-card-front">Social Bullying</div>
                         <div class="flip-card-back">
                             <div class="card-def-label">Definition:</div>
-                            <div class="card-def-text">Spreading rumors, deliberate social exclusion, or rallying others to isolate a peer.</div>
+                            <div class="card-def-text">Spreading rumors, social exclusion, or isolating a peer.</div>
                             <div class="card-impact-label">Impact on Victim:</div>
-                            <div class="card-def-text">Leads to intense feelings of loneliness, severe depression, loss of friendship networks, and deep distrust towards peers.</div>
+                            <div class="card-def-text">Leads to intense feelings of loneliness and deep depression.</div>
                         </div>
                     </div>
                 </div>
@@ -237,9 +243,9 @@
                         <div class="flip-card-front">Cyber Bullying</div>
                         <div class="flip-card-back">
                             <div class="card-def-label">Definition:</div>
-                            <div class="card-def-text">Sending abusive text messages, rumors, or private info across social media platforms.</div>
+                            <div class="card-def-text">Sending abusive text messages or private info on social media.</div>
                             <div class="card-impact-label">Impact on Victim:</div>
-                            <div class="card-def-text">Creates a feeling of inescapable danger 24/7, public humiliation, and extreme mental exhaustion.</div>
+                            <div class="card-def-text">Creates inescapable danger 24/7 and public humiliation.</div>
                         </div>
                     </div>
                 </div>
@@ -248,9 +254,9 @@
                         <div class="flip-card-front">Sexual Bullying</div>
                         <div class="flip-card-back">
                             <div class="card-def-label">Definition:</div>
-                            <div class="card-def-text">Using crude remarks, inappropriate gestures, or unwelcome physical touching.</div>
+                            <div class="card-def-text">Using crude remarks, inappropriate gestures, or unwelcome touching.</div>
                             <div class="card-impact-label">Impact on Victim:</div>
-                            <div class="card-def-text">Induces profound psychological trauma, intense shame, body image distortion, and long-term anxiety.</div>
+                            <div class="card-def-text">Induces profound psychological trauma and body image distortion.</div>
                         </div>
                     </div>
                 </div>
@@ -259,20 +265,21 @@
                         <div class="flip-card-front">Covert Bullying</div>
                         <div class="flip-card-back">
                             <div class="card-def-label">Definition:</div>
-                            <div class="card-def-text">Subtle behaviors that are hidden, such as toxic whispering, glaring, or turning away.</div>
+                            <div class="card-def-text">Subtle hidden behaviors, toxic whispering, or glaring.</div>
                             <div class="card-impact-label">Impact on Victim:</div>
-                            <div class="card-def-text">Causes paranoia, progressive loss of self-confidence, emotional stress, and quiet psychological suffering.</div>
+                            <div class="card-def-text">Causes paranoia, progressive stress, and quiet suffering.</div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- View 2: Data -->
         <section class="view" id="view-2">
             <div class="page-title">Data Analysis (2020 - 2025)</div>
             <div class="data-content">
                 <div class="chart-box-pie">
-                    <div class="chart-sub-title">Overall Bullying Breakdown (2020-2025)</div>
+                    <div class="chart-sub-title">Overall Bullying Breakdown</div>
                     <canvas id="pieChartCanvas"></canvas>
                 </div>
                 <div class="chart-box-bar">
@@ -282,12 +289,13 @@
             </div>
         </section>
 
+        <!-- View 3: Solution -->
         <section class="view" id="view-3">
             <div class="page-title">Solutions & Actions</div>
             <div class="solution-grid">
-                <div class="sol-box"><h3>1. Verbal Response</h3><p>Stay calm, speak up confidently with clear boundaries, and walk away.</p></div>
-                <div class="sol-box"><h3>2. Cyber Defense</h3><p>Take screenshots to preserve evidence, block abusive accounts, and report.</p></div>
-                <div class="sol-box"><h3>3. School Reporting</h3><p>Report the incident securely through the school's safe anonymous grievance channels.</p></div>
+                <div class="sol-box"><h3>1. Verbal Response</h3><p>Stay calm, speak up confidently with boundaries, and walk away.</p></div>
+                <div class="sol-box"><h3>2. Cyber Defense</h3><p>Take screenshots to preserve evidence, block accounts, and report.</p></div>
+                <div class="sol-box"><h3>3. School Reporting</h3><p>Report safely through the school's safe anonymous grievance channels.</p></div>
                 <div class="sol-box"><h3>4. Trusted Adults</h3><p>Confide in parents, school guidance counselors, or trusted teachers.</p></div>
                 <div class="sol-box"><h3>5. Peer Support</h3><p>Stand up as an active bystander, assist victims safely, and prevent isolation.</p></div>
                 <div class="sol-box"><h3>6. Legal & Hotlines</h3><p>Contact local safety authorities or dial dedicated helplines (110 / 12355).</p></div>
@@ -299,12 +307,13 @@
         <div class="marquee-text">⚠️ EMERGENCY WARNING: If you are experiencing bullying, please call Emergency Police: 110 ｜ National Youth Hotline: 12355 ｜ Never bow down to bullying!</div>
     </div>
 
+    <!-- AI Chat System -->
     <button class="ai-ball" id="ai-btn">AI</button>
     <div class="ai-modal" id="ai-modal">
         <div class="ai-header"><span>AI Live Counselor (Gemini Core)</span> <span id="close-ai">✖</span></div>
         <div class="ai-body" id="ai-chat-body">
             <div class="msg bot">Hello! I am your real-time intelligent AI Counselor powered by Gemini. 😺</div>
-            <div class="msg bot">I have ingested our entire website database. You can ask me long questions about definitions, impacts, data metrics, or solutions!</div>
+            <div class="msg bot">I have ingested our website database. Ask me any long questions regarding anti-bullying info!</div>
         </div>
         <div class="ai-footer">
             <div class="ai-input-area">
@@ -316,6 +325,7 @@
 
 </div>
 
+<!-- ⚙️ JavaScript Core 请求与交互模块 -->
 <script>
     const GEMINI_API_KEY = "AQ.Ab8RN6JH3HBfTU-Jz4wAAFZk0iJKDYvadwCRf2bAE-ebOXiDxQ"; 
 
@@ -418,6 +428,7 @@
     }
 </script>
 
+<!-- 图表模块 -->
 <script>
     const ctxPie = document.getElementById('pieChartCanvas').getContext('2d');
     new Chart(ctxPie, {
@@ -430,7 +441,7 @@
                 borderWidth: 2, borderColor: '#333'
             }]
         },
-        options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { weight: 'bold' } } } } }
+        options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, weight: 'bold' } } } } }
     });
 
     const top3DataByYear = {
@@ -450,7 +461,7 @@
             datasets: [{
                 label: 'Total Annual Incidents',
                 data: [420, 510, 480, 560, 630, 490],
-                backgroundColor: '#a1887f', borderColor: '#333', borderWidth: 2, barThickness: 25
+                backgroundColor: '#a1887f', borderColor: '#333', borderWidth: 2
             }]
         },
         options: {
