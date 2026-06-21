@@ -18,6 +18,41 @@
 
         #app { position: relative; width: 100%; height: 100%; display: flex; }
 
+        /* ================= 🔄 智能横屏提示遮罩 CSS ================= */
+        #rotate-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 15, 15, 0.96);
+            z-index: 99999;
+            color: white;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        /* 旋转小动画 */
+        .rotate-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* 🎥 核心触发逻辑：当屏幕处于竖屏状态（高大于宽）且是小屏幕设备时弹出 */
+        @media (max-aspect-ratio: 1/1) and (max-width: 950px) {
+            #rotate-overlay {
+                display: flex;
+            }
+        }
+
         /* ================= VIEW CONTAINER ================= */
         .view-container { position: relative; flex: 1; height: 100%; padding-right: 300px; }
         .view {
@@ -98,9 +133,35 @@
         .sol-box:hover { transform: translateY(-3px); background-color: #f1f8e9; }
         .sol-box h3 { margin: 0 0 10px 0; font-size: 18px; color: #1b5e20; border-left: 4px solid #4caf50; padding-left: 8px; }
         .sol-box p { margin: 0; font-size: 14px; line-height: 1.5; color: #555; }
+
+        /* ======================================================== */
+        /* 📱 移动端自适应备用逻辑（当用户横屏时完美展示） */
+        /* ======================================================== */
+        @media (max-width: 950px) {
+            .view-container { padding-right: 0px !important; }
+            .view { padding: 4% 4%; padding-bottom: 100px; }
+            .side-nav { width: 110px !important; height: 220px !important; top: 50% !important; right: 0 !important; transform: translateY(-50%) !important; }
+            .card-grid, .solution-grid, .data-content, .home-meaning-box, .home-desc, .page-title { 
+                max-width: calc(100% - 125px) !important; 
+            }
+            .card-grid, .solution-grid { grid-template-columns: 1fr !important; gap: 16px !important; } 
+            .flip-card { height: 140px !important; }
+            .data-content { flex-direction: column !important; gap: 25px !important; padding: 15px !important; }
+            .chart-box-pie { max-width: 100% !important; }
+            .ai-ball { right: 15px !important; bottom: 55px !important; width: 50px !important; height: 50px !important; font-size: 13px !important; z-index: 90 !important; }
+            .ai-modal { right: 15px !important; bottom: 115px !important; width: calc(100vw - 30px) !important; max-width: 300px !important; z-index: 100 !important; }
+            .marquee-text { font-size: 13px !important; }
+        }
     </style>
 </head>
 <body>
+
+<div id="rotate-overlay">
+    <div class="rotate-icon">🔄</div>
+    <h3 style="margin: 0 0 10px 0; font-size: 20px;">Landscape Mode Required</h3>
+    <p style="color: #aaa; font-size: 14px; margin: 0 0 5px 0; max-width: 280px; line-height: 1.4;">Please enable auto-rotate and turn your phone sideways for the best experience.</p>
+    <p style="color: #666; font-size: 12px; margin: 0;">（为了获得完整的交互数据看板体验，请横屏使用）</p>
+</div>
 
 <div id="app">
 
@@ -136,7 +197,7 @@
         </article>
 
         <section class="view" id="view-1">
-            <div class="page-title">Types of Bullying & Their Impacts (Hover to flip)</div>
+            <div class="page-title">Types of Bullying & Their Impacts</div>
             <div class="card-grid">
                 <div class="flip-card" tabindex="0">
                     <div class="flip-card-inner">
@@ -215,7 +276,7 @@
                     <canvas id="pieChartCanvas"></canvas>
                 </div>
                 <div class="chart-box-bar">
-                    <div class="chart-sub-title">Annual Cases & Top 3 Incidents (Hover/Click)</div>
+                    <div class="chart-sub-title">Annual Cases & Top 3 Incidents</div>
                     <canvas id="barChartCanvas"></canvas>
                 </div>
             </div>
@@ -256,7 +317,6 @@
 </div>
 
 <script>
-    // 🌟 继承并保留你申请的真实 API 密钥
     const GEMINI_API_KEY = "AQ.Ab8RN6JH3HBfTU-Jz4wAAFZk0iJKDYvadwCRf2bAE-ebOXiDxQ"; 
 
     const views = document.querySelectorAll('.view');
@@ -285,9 +345,6 @@
     aiSend.addEventListener('click', callGeminiAI);
     aiInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') callGeminiAI(); });
 
-    // ==========================================
-    // 🛠️ 使用原生 Fetch 构建极其安全的网络请求流
-    // ==========================================
     async function callGeminiAI() {
         const prompt = aiInput.value.trim();
         if (!prompt) return;
@@ -298,7 +355,6 @@
         const loadId = appendMsg('Gemini is processing your context...', 'loading');
 
         try {
-            // 洗脑大模型的本地封闭指令
             const systemInstruction = `
                 You are the exclusive smart counselor for the Anti-Bullying Guide website.
                 CRITICAL INSTRUCTION: You must analyze the user's natural sentence intent, but you MUST ONLY reply using the website's factual content provided below. Do NOT use outside web facts.
@@ -319,7 +375,6 @@
                 "I am sorry, but as the dedicated system counselor, I am strictly restricted to answering questions regarding our campus anti-bullying types, analysis, and emergency hotlines. Please try again."
             `;
 
-            // 发起安全的 HTTPS REST 请求，完美通过 GitHub Pages 的浏览器校验
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
