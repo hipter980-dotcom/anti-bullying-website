@@ -283,6 +283,73 @@
     }
 }
 
+
+/* ===== Honor Pad and Mobile Layout Improvements ===== */
+@media screen and (max-width:1400px) {
+    .side-nav{
+        height:45vh !important;
+    }
+
+    .view-container{
+        padding-right:220px !important;
+    }
+
+    .ai-ball{
+        right:200px !important;
+    }
+
+    .ai-modal{
+        right:210px !important;
+    }
+}
+
+@media screen and (max-width:900px) and (orientation:landscape){
+    .side-nav{
+        height:28vh !important;
+    }
+
+    .view-container{
+        padding-right:90px !important;
+    }
+
+    .card-grid,
+    .solution-grid{
+        grid-template-columns:1fr !important;
+        max-width:500px;
+    }
+
+    .flip-card{
+        height:120px !important;
+    }
+
+    .home-title{
+        font-size:24px !important;
+    }
+
+    .page-title{
+        font-size:16px !important;
+    }
+
+    .home-meaning-box,
+    .home-desc{
+        max-width:500px;
+    }
+
+    .ai-ball{
+        width:36px !important;
+        height:36px !important;
+        right:70px !important;
+        bottom:45px !important;
+        font-size:11px !important;
+    }
+
+    .ai-modal{
+        width:220px !important;
+        height:300px !important;
+        right:80px !important;
+    }
+}
+
 </style>
 </head>
 <body>
