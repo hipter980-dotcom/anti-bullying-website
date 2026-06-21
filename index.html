@@ -105,7 +105,8 @@
         /* ================= INNER PAGES STYLE ================= */
         .page-title { font-size: clamp(18px, 2.2vw, 24px); border: 2px solid #333; border-radius: 8px; padding: 6px 16px; display: inline-block; margin-bottom: 25px; background: #fff; font-weight: bold; width: fit-content; }
         .home-title { font-size: clamp(36px, 4.5vw, 65px); border-bottom: 4px solid #333; display: inline-block; padding-bottom: 10px; margin-bottom: 20px; margin-top: 0px; }
-        .home-meaning-box { background: #fff; border: 2px solid #333; border-radius: 8px; padding: 20px 24px; width: auto; max-width: 850px; margin-bottom: 25px; font-size: clamp(16px, 1.8vw, 20px); line-height: 1.6; border-left: 8px solid #e53935; }50px; margin-bottom: 25px; font-size: clamp(16px, 1.8vw, 20px); line-height: 1.6; border-left: 8px solid #e53935; }
+        /* 🛠️ 已经完全去除了垃圾后缀的干净自适应盒子属性 */
+        .home-meaning-box { background: #fff; border: 2px solid #333; border-radius: 8px; padding: 20px 24px; width: auto; max-width: 850px; margin-bottom: 25px; font-size: clamp(16px, 1.8vw, 20px); line-height: 1.6; border-left: 8px solid #e53935; }
         .home-meaning-box i { font-weight: bold; color: #b71c1c; font-size: clamp(18px, 2vw, 24px); display: inline-block; margin-bottom: 6px; }
         .home-desc { font-size: clamp(15px, 1.8vw, 18px); line-height: 1.6; color: #555; max-width: 750px; }
 
@@ -220,6 +221,7 @@
             </div>
         </section>
 
+        <!-- View 2: Data -->
         <section class="view" id="view-2">
             <div class="page-title">Data Analysis (2020 - 2025)</div>
             <div class="data-content">
@@ -234,6 +236,7 @@
             </div>
         </section>
 
+        <!-- View 3: Solution -->
         <section class="view" id="view-3">
             <div class="page-title">Solutions & Actions</div>
             <div class="solution-grid">
@@ -272,6 +275,7 @@
         <div class="marquee-text">⚠️ EMERGENCY WARNING: If you are experiencing bullying, please call Emergency Police: 110 ｜ National Youth Hotline: 12355 ｜ Never bow down to bullying!</div>
     </div>
 
+    <!-- AI Chat System -->
     <button class="ai-ball" id="ai-btn">AI</button>
     <div class="ai-modal" id="ai-modal">
         <div class="ai-header"><span>AI Live Counselor (Gemini Core)</span> <span id="close-ai">✖</span></div>
@@ -289,6 +293,7 @@
 
 </div>
 
+<!-- ⚙️ JavaScript Core 联网引擎 -->
 <script>
     const GEMINI_API_KEY = "AIzaSyA" + "b8RN6JH3HBfTU-J" + "z4wAAFZk0iJKDYvadwCRf2bAE-ebOXiDxQ"; 
 
@@ -375,6 +380,7 @@
         }
     }
 
+    // 通用消息渲染
     function appendMsg(content, type) {
         const div = document.createElement('div');
         div.className = `msg ${type}`;
@@ -391,6 +397,7 @@
     }
 </script>
 
+<!-- 图表模块 -->
 <script>
     const ctxPie = document.getElementById('pieChartCanvas').getContext('2d');
     new Chart(ctxPie, {
