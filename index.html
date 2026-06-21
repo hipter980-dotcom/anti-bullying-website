@@ -136,11 +136,120 @@
         .sol-box { background: #fff; border: 2px solid #333; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; text-align: left; }
         .sol-box h3 { margin: 0 0 10px 0; font-size: 18px; color: #1b5e20; border-left: 4px solid #4caf50; padding-left: 8px; }
         .sol-box p { margin: 0; font-size: 14px; line-height: 1.5; color: #555; }
-    </style>
+    
+
+        /* ================= MOBILE & TABLET RESPONSIVE ================= */
+        #rotate-screen {
+            display: none;
+        }
+
+        .rotate-content {
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        @media screen and (max-width:1024px) {
+            .side-nav { height: 50vh; }
+            .view-container { padding-right: 240px; }
+            .ai-ball { right: 220px; }
+            .ai-modal { right: 230px; }
+            .card-grid { grid-template-columns: repeat(2,1fr); }
+            .solution-grid { grid-template-columns: repeat(2,1fr); }
+        }
+
+        @media screen and (max-width:768px) and (orientation:landscape) {
+            .side-nav { height: 35vh; }
+            .view-container { padding-right: 130px; }
+            .view { padding: 20px 15px 60px 20px; }
+            .nav-item text { font-size: 16px; }
+            .page-title { font-size: 18px; margin-bottom: 15px; }
+            .home-title { font-size: 28px; }
+            .home-meaning-box {
+                font-size: 14px;
+                padding: 15px;
+                max-width: 450px;
+            }
+            .home-desc { font-size: 13px; }
+
+            .card-grid {
+                grid-template-columns: repeat(2,1fr);
+                gap: 12px;
+            }
+
+            .flip-card { height: 170px; }
+
+            .solution-grid {
+                grid-template-columns: repeat(2,1fr);
+                gap: 12px;
+            }
+
+            .sol-box h3 { font-size: 15px; }
+            .sol-box p { font-size: 12px; }
+
+            .data-content {
+                flex-direction: column;
+                gap: 20px;
+                padding: 15px;
+            }
+
+            .chart-box-pie,
+            .chart-box-bar {
+                max-width: 100%;
+            }
+
+            .ai-ball {
+                width: 45px;
+                height: 45px;
+                right: 120px;
+                bottom: 50px;
+                font-size: 14px;
+            }
+
+            .ai-modal {
+                width: 250px;
+                height: 320px;
+                right: 130px;
+                bottom: 100px;
+            }
+
+            .marquee-container { height: 30px; }
+            .marquee-text { font-size: 12px; }
+        }
+
+        @media screen and (max-width:900px) and (orientation:portrait) {
+            #rotate-screen {
+                display: flex;
+                position: fixed;
+                inset: 0;
+                background: #fdfaf0;
+                justify-content: center;
+                align-items: center;
+                z-index: 999999;
+                padding: 20px;
+            }
+
+            #app {
+                display: none;
+            }
+        }
+
+</style>
 </head>
 <body>
 
+
+<div id="rotate-screen">
+    <div class="rotate-content">
+        📱 Please Rotate Your Device<br><br>
+        This website is optimized for landscape mode.
+    </div>
+</div>
+
 <div id="app">
+
 
     <main class="view-container">
         <!-- View 0: Home -->
