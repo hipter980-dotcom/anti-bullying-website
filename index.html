@@ -18,13 +18,13 @@
 
         #app { position: relative; width: 100%; height: 100%; display: flex; }
 
-        /* ================= VIEW CONTAINER (🛡️ 居中精细排版) ================= */
+        /* ================= VIEW CONTAINER (🛠️ 彻底重构：安全居中区域) ================= */
         .view-container { 
             position: relative; 
             flex: 1; 
             height: 100%; 
-            padding: 50px 60px; 
-            padding-bottom: 90px;
+            /* 右边留出 350px 绝对安全区，把大圆盘的空间彻底扣出来 */
+            padding-right: 350px; 
             box-sizing: border-box;
         }
         .view {
@@ -32,19 +32,30 @@
             opacity: 0; pointer-events: none; 
             transition: opacity 0.4s ease, transform 0.4s ease;
             transform: translateY(15px);
+            
+            /* 采用 Flex 垂直居中 */
             display: flex; 
             flex-direction: column;
-            /* 🌟 终极居中核心改动：让圈起来的所有内容在左侧安全空间里垂直和水平完全居中 */
             justify-content: center;
-            align-items: center;
-            text-align: center;
+            align-items: center; 
             overflow-y: auto; 
-            padding-right: 300px; 
+            padding: 40px;
         }
         .view.active { opacity: 1; pointer-events: auto; z-index: 10; transform: translateY(0); }
         .view::-webkit-scrollbar { width: 0px; }
 
-        /* ================= SVG CIRCULAR NAVIGATION (很好，完全没动它) ================= */
+        /* ================= 🌟 核心修复：强制内容包裹层居中 🌟 ================= */
+        .home-center-content {
+            width: 100%;
+            max-width: 750px; /* 限制最大宽度，防止文字拉得太长 */
+            margin: 0 auto;   /* 左右自动外边距，强制绝对居中！ */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 让内部的标题、红框、文字全部居中对齐 */
+            text-align: center;
+        }
+
+        /* ================= SVG CIRCULAR NAVIGATION (完全没动它) ================= */
         .side-nav { 
             position: absolute; 
             right: 0; 
@@ -106,34 +117,36 @@
 
         /* ================= INNER PAGES STYLE ================= */
         .page-title { font-size: clamp(18px, 2.2vw, 24px); border: 2px solid #333; border-radius: 8px; padding: 6px 16px; display: inline-block; margin-bottom: 25px; background: #fff; font-weight: bold; width: fit-content; }
-        .home-title { font-size: clamp(36px, 4.5vw, 65px); border-bottom: 4px solid #333; display: inline-block; padding-bottom: 10px; margin-bottom: 20px; margin-top: 0px; text-align: center; }
-        .home-meaning-box { background: #fff; border: 2px solid #333; border-radius: 8px; padding: 20px 24px; width: 100%; max-width: 850px; margin-bottom: 25px; font-size: clamp(16px, 1.8vw, 20px); line-height: 1.6; border-left: 8px solid #e53935; text-align: left; }
-        .home-meaning-box i { font-weight: bold; color: #b71c1c; font-size: clamp(18px, 2vw, 24px); display: inline-block; margin-bottom: 6px; }
-        .home-desc { font-size: clamp(15px, 1.8vw, 18px); line-height: 1.6; color: #555; max-width: 750px; text-align: center; }
+        
+        /* 优化主页文字样式 */
+        .home-title { font-size: clamp(32px, 4vw, 55px); border-bottom: 4px solid #333; display: inline-block; padding-bottom: 10px; margin-bottom: 25px; margin-top: 0px; font-weight: bold; }
+        .home-meaning-box { background: #fff; border: 2px solid #333; border-radius: 8px; padding: 22px 26px; width: 100%; margin-bottom: 25px; font-size: clamp(15px, 1.6vw, 19px); line-height: 1.6; border-left: 8px solid #e53935; text-align: left; }
+        .home-meaning-box i { font-weight: bold; color: #b71c1c; font-size: clamp(18px, 2vw, 22px); display: inline-block; margin-bottom: 6px; }
+        .home-desc { font-size: clamp(14px, 1.5vw, 17px); line-height: 1.6; color: #555; margin: 0; }
 
-        /* 卡片网格布局保持水平居中 */
-        .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; width: 100%; max-width: 1100px; padding-bottom: 10px; justify-content: center; }
-        .flip-card { background-color: transparent; height: calc(29vh - 10px); perspective: 1000px; outline: none; }
+        /* 卡片网格布局 */
+        .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 950px; }
+        .flip-card { background-color: transparent; height: calc(28vh - 10px); perspective: 1000px; outline: none; }
         .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
         .flip-card:hover .flip-card-inner, .flip-card:focus .flip-card-inner, .flip-card.kb-flipped .flip-card-inner { transform: rotateY(180deg); }
         .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; border-radius: 12px; border: 2px solid #333; padding: 12px 14px; }
-        .flip-card-front { background-color: #fff; font-size: 19px; font-weight: bold; justify-content: center; align-items: center; transform: rotateY(0deg); z-index: 2; }
+        .flip-card-front { background-color: #fff; font-size: 18px; font-weight: bold; justify-content: center; align-items: center; transform: rotateY(0deg); z-index: 2; }
         .flip-card-back { background-color: #fff9c4; text-align: left; justify-content: flex-start; align-items: flex-start; transform: rotateY(180deg); overflow-y: auto; }
         .flip-card-back::-webkit-scrollbar { width: 0px; }
         .card-def-label { font-weight: bold; color: #b71c1c; font-size: 12px; margin-bottom: 2px; border-bottom: 1px dashed #aaa; width: 100%; }
-        .card-def-text { font-size: 12px; line-height: 1.35; color: #333; margin-bottom: 6px; }
+        .card-def-text { font-size: 11px; line-height: 1.35; color: #333; margin-bottom: 6px; }
         .card-impact-label { font-weight: bold; color: #1b5e20; font-size: 12px; margin-bottom: 2px; border-bottom: 1px dashed #aaa; width: 100%; }
 
-        /* 数据分析与解决方案居中对齐 */
-        .data-content { display: flex; align-items: stretch; gap: 40px; width: 100%; max-width: 1000px; background: #fff; border: 2px solid #333; border-radius: 12px; padding: 25px; justify-content: center; }
-        .chart-box-pie { flex: 1; position: relative; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+        /* 数据分析与解决方案 */
+        .data-content { display: flex; align-items: stretch; gap: 30px; width: 100%; max-width: 950px; background: #fff; border: 2px solid #333; border-radius: 12px; padding: 20px; }
+        .chart-box-pie { flex: 1; position: relative; max-width: 350px; display: flex; flex-direction: column; align-items: center; }
         .chart-box-bar { flex: 1.3; position: relative; display: flex; flex-direction: column; justify-content: center; }
-        .chart-sub-title { font-weight: bold; margin-bottom: 10px; font-size: 15px; text-align: center; color: #555; }
+        .chart-sub-title { font-weight: bold; margin-bottom: 10px; font-size: 14px; text-align: center; color: #555; }
 
-        .solution-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 950px; justify-content: center; }
-        .sol-box { background: #fff; border: 2px solid #333; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; text-align: left; }
-        .sol-box h3 { margin: 0 0 10px 0; font-size: 18px; color: #1b5e20; border-left: 4px solid #4caf50; padding-left: 8px; }
-        .sol-box p { margin: 0; font-size: 14px; line-height: 1.5; color: #555; }
+        .solution-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; max-width: 950px; }
+        .sol-box { background: #fff; border: 2px solid #333; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; text-align: left; }
+        .sol-box h3 { margin: 0 0 8px 0; font-size: 16px; color: #1b5e20; border-left: 4px solid #4caf50; padding-left: 8px; }
+        .sol-box p { margin: 0; font-size: 13px; line-height: 1.4; color: #555; }
     </style>
 </head>
 <body>
@@ -141,119 +154,122 @@
 <div id="app">
 
     <main class="view-container">
-        <!-- View 0: Home -->
         <article class="view active" id="view-0">
-            <h1 class="home-title">Anti-Bullying Guide</h1>
-            <div class="home-meaning-box">
-                <i>What is Bullying?</i><br>
-                Bullying is unwanted, aggressive behavior among school-aged children that involves a real or perceived power imbalance. The behavior is repeated over time, causing severe physical or psychological distress.
+            <div class="home-center-content">
+                <h1 class="home-title">Anti-Bullying Guide</h1>
+                <div class="home-meaning-box">
+                    <i>What is Bullying?</i><br>
+                    Bullying is unwanted, aggressive behavior among school-aged children that involves a real or perceived power imbalance. The behavior is repeated over time, causing severe physical or psychological distress.
+                </div>
+                <p class="home-desc">Welcome to the Anti-Bullying Interactive Guide System.<br><br>Click the <b>Circular Menu</b> on the right to freely switch between sections and explore vital information.</p>
             </div>
-            <p class="home-desc">Welcome to the Anti-Bullying Interactive Guide System.<br><br>Click the <b>Circular Menu</b> on the right to freely switch between sections and explore vital information.</p>
         </article>
 
-        <!-- View 1: Types -->
         <section class="view" id="view-1">
-            <div class="page-title">Types of Bullying & Their Impacts</div>
-            <div class="card-grid">
-                <div class="flip-card" tabindex="0">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">Physical Bullying</div>
-                        <div class="flip-card-back">
-                            <div class="card-def-label">Definition:</div>
-                            <div class="card-def-text">Pushing, hitting, tripping, taking or damaging belongings.</div>
-                            <div class="card-impact-label">Impact on Victim:</div>
-                            <div class="card-def-text">Causes direct bodily injuries, chronic pain, and fear of school.</div>
+            <div class="home-center-content">
+                <div class="page-title">Types of Bullying & Their Impacts</div>
+                <div class="card-grid">
+                    <div class="flip-card" tabindex="0">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">Physical Bullying</div>
+                            <div class="flip-card-back">
+                                <div class="card-def-label">Definition:</div>
+                                <div class="card-def-text">Pushing, hitting, tripping, taking or damaging belongings.</div>
+                                <div class="card-impact-label">Impact on Victim:</div>
+                                <div class="card-def-text">Causes direct bodily injuries, chronic pain, and fear of school.</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="flip-card" tabindex="0">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">Verbal Bullying</div>
-                        <div class="flip-card-back">
-                            <div class="card-def-label">Definition:</div>
-                            <div class="card-def-text">Teasing, name-calling, insulting, or making malicious threats.</div>
-                            <div class="card-impact-label">Impact on Victim:</div>
-                            <div class="card-def-text">Erodes self-esteem and triggers severe academic decline.</div>
+                    <div class="flip-card" tabindex="0">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">Verbal Bullying</div>
+                            <div class="flip-card-back">
+                                <div class="card-def-label">Definition:</div>
+                                <div class="card-def-text">Teasing, name-calling, insulting, or making malicious threats.</div>
+                                <div class="card-impact-label">Impact on Victim:</div>
+                                <div class="card-def-text">Erodes self-esteem and triggers severe academic decline.</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="flip-card" tabindex="0">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">Social Bullying</div>
-                        <div class="flip-card-back">
-                            <div class="card-def-label">Definition:</div>
-                            <div class="card-def-text">Spreading rumors, social exclusion, or isolating a peer.</div>
-                            <div class="card-impact-label">Impact on Victim:</div>
-                            <div class="card-def-text">Leads to intense feelings of loneliness and deep depression.</div>
+                    <div class="flip-card" tabindex="0">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">Social Bullying</div>
+                            <div class="flip-card-back">
+                                <div class="card-def-label">Definition:</div>
+                                <div class="card-def-text">Spreading rumors, social exclusion, or isolating a peer.</div>
+                                <div class="card-impact-label">Impact on Victim:</div>
+                                <div class="card-def-text">Leads to intense feelings of loneliness and deep depression.</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="flip-card" tabindex="0">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">Cyber Bullying</div>
-                        <div class="flip-card-back">
-                            <div class="card-def-label">Definition:</div>
-                            <div class="card-def-text">Sending abusive text messages or private info on social media.</div>
-                            <div class="card-impact-label">Impact on Victim:</div>
-                            <div class="card-def-text">Creates inescapable danger 24/7 and public humiliation.</div>
+                    <div class="flip-card" tabindex="0">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">Cyber Bullying</div>
+                            <div class="flip-card-back">
+                                <div class="card-def-label">Definition:</div>
+                                <div class="card-def-text">Sending abusive text messages or private info on social media.</div>
+                                <div class="card-impact-label">Impact on Victim:</div>
+                                <div class="card-def-text">Creates inescapable danger 24/7 and public humiliation.</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="flip-card" tabindex="0">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">Sexual Bullying</div>
-                        <div class="flip-card-back">
-                            <div class="card-def-label">Definition:</div>
-                            <div class="card-def-text">Using crude remarks, inappropriate gestures, or unwelcome touching.</div>
-                            <div class="card-impact-label">Impact on Victim:</div>
-                            <div class="card-def-text">Induces profound psychological trauma and body image distortion.</div>
+                    <div class="flip-card" tabindex="0">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">Sexual Bullying</div>
+                            <div class="flip-card-back">
+                                <div class="card-def-label">Definition:</div>
+                                <div class="card-def-text">Using crude remarks, inappropriate gestures, or unwelcome touching.</div>
+                                <div class="card-impact-label">Impact on Victim:</div>
+                                <div class="card-def-text">Induces profound psychological trauma and body image distortion.</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="flip-card" tabindex="0">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">Covert Bullying</div>
-                        <div class="flip-card-back">
-                            <div class="card-def-label">Definition:</div>
-                            <div class="card-def-text">Subtle hidden behaviors, toxic whispering, or glaring.</div>
-                            <div class="card-impact-label">Impact on Victim:</div>
-                            <div class="card-def-text">Causes paranoia, progressive stress, and quiet suffering.</div>
+                    <div class="flip-card" tabindex="0">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">Covert Bullying</div>
+                            <div class="flip-card-back">
+                                <div class="card-def-label">Definition:</div>
+                                <div class="card-def-text">Subtle hidden behaviors, toxic whispering, or glaring.</div>
+                                <div class="card-impact-label">Impact on Victim:</div>
+                                <div class="card-def-text">Causes paranoia, progressive stress, and quiet suffering.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- View 2: Data -->
         <section class="view" id="view-2">
-            <div class="page-title">Data Analysis (2020 - 2025)</div>
-            <div class="data-content">
-                <div class="chart-box-pie">
-                    <div class="chart-sub-title">Overall Bullying Breakdown</div>
-                    <canvas id="pieChartCanvas"></canvas>
-                </div>
-                <div class="chart-box-bar">
-                    <div class="chart-sub-title">Annual Cases & Top 3 Incidents</div>
-                    <canvas id="barChartCanvas"></canvas>
+            <div class="home-center-content">
+                <div class="page-title">Data Analysis (2020 - 2025)</div>
+                <div class="data-content">
+                    <div class="chart-box-pie">
+                        <div class="chart-sub-title">Overall Bullying Breakdown</div>
+                        <canvas id="pieChartCanvas"></canvas>
+                    </div>
+                    <div class="chart-box-bar">
+                        <div class="chart-sub-title">Annual Cases & Top 3 Incidents</div>
+                        <canvas id="barChartCanvas"></canvas>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- View 3: Solution -->
         <section class="view" id="view-3">
-            <div class="page-title">Solutions & Actions</div>
-            <div class="solution-grid">
-                <div class="sol-box"><h3>1. Verbal Response</h3><p>Stay calm, speak up confidently with boundaries, and walk away.</p></div>
-                <div class="sol-box"><h3>2. Cyber Defense</h3><p>Take screenshots to preserve evidence, block accounts, and report.</p></div>
-                <div class="sol-box"><h3>3. School Reporting</h3><p>Report safely through the school's safe anonymous grievance channels.</p></div>
-                <div class="sol-box"><h3>4. Trusted Adults</h3><p>Confide in parents, school guidance counselors, or trusted teachers.</p></div>
-                <div class="sol-box"><h3>5. Peer Support</h3><p>Stand up as an active bystander, assist victims safely, and prevent isolation.</p></div>
-                <div class="sol-box"><h3>6. Legal & Hotlines</h3><p>Contact local safety authorities or dial dedicated helplines (110 / 12355).</p></div>
+            <div class="home-center-content">
+                <div class="page-title">Solutions & Actions</div>
+                <div class="solution-grid">
+                    <div class="sol-box"><h3>1. Verbal Response</h3><p>Stay calm, speak up confidently with boundaries, and walk away.</p></div>
+                    <div class="sol-box"><h3>2. Cyber Defense</h3><p>Take screenshots to preserve evidence, block accounts, and report.</p></div>
+                    <div class="sol-box"><h3>3. School Reporting</h3><p>Report safely through the school's safe anonymous grievance channels.</p></div>
+                    <div class="sol-box"><h3>4. Trusted Adults</h3><p>Confide in parents, school guidance counselors, or trusted teachers.</p></div>
+                    <div class="sol-box"><h3>5. Peer Support</h3><p>Stand up as an active bystander, assist victims safely, and prevent isolation.</p></div>
+                    <div class="sol-box"><h3>6. Legal & Hotlines</h3><p>Contact local safety authorities or dial dedicated helplines (110 / 12355).</p></div>
+                </div>
             </div>
         </section>
     </main>
 
-    <!-- 右侧挂载大半圆盘 -->
     <nav class="side-nav" aria-label="Circular Interactive Menu">
         <svg viewBox="0 0 250 500" xmlns="http://www.w3.org/2000/svg">
             <g class="nav-item" id="nav-1" onclick="goToView(1, this)" role="button" tabindex="0">
@@ -279,7 +295,6 @@
         <div class="marquee-text">⚠️ EMERGENCY WARNING: If you are experiencing bullying, please call Emergency Police: 110 ｜ National Youth Hotline: 12355 ｜ Never bow down to bullying!</div>
     </div>
 
-    <!-- AI Chat System -->
     <button class="ai-ball" id="ai-btn">AI</button>
     <div class="ai-modal" id="ai-modal">
         <div class="ai-header"><span>AI Live Counselor (Gemini Core)</span> <span id="close-ai">✖</span></div>
@@ -297,7 +312,6 @@
 
 </div>
 
-<!-- ⚙️ JavaScript Core 联网引擎 -->
 <script>
     const GEMINI_API_KEY = "AIzaSyA" + "b8RN6JH3HBfTU-J" + "z4wAAFZk0iJKDYvadwCRf2bAE-ebOXiDxQ"; 
 
@@ -400,7 +414,6 @@
     }
 </script>
 
-<!-- 图表模块 -->
 <script>
     const ctxPie = document.getElementById('pieChartCanvas').getContext('2d');
     new Chart(ctxPie, {
@@ -413,7 +426,7 @@
                 borderWidth: 2, borderColor: '#333'
             }]
         },
-        options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 12, weight: 'bold' } } } } }
+        options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11, weight: 'bold' } } } } }
     });
 
     const top3DataByYear = {
