@@ -524,7 +524,13 @@
 
 <!-- ⚙️ JavaScript Core 联网引擎 -->
 <script>
-    const GEMINI_API_KEY = "AIzaSyA" + "b8RN6JH3HBfTU-J" + "z4wAAFZk0iJKDYvadwCRf2bAE-ebOXiDxQ"; 
+   <!-- ⚙️ JavaScript Core 联网引擎 -->
+<script>
+    // ⚠️ 务必在这里填入你刚刚新生成的、以 AIza 开头的全新 API Key！如果还没申请，去申请一个填在这双引号里面！
+    <!-- ⚙️ JavaScript Core 联网引擎 (全能自由问答版) -->
+<script>
+    // 🌟 依然填入你的 AQ. 开头密钥
+    const GEMINI_API_KEY = "AQ.Ab8RN6KTfLovO1972DYVUQdmjPQjCiVWAoULuGcZlUjTLyGjXw"; 
 
     const views = document.querySelectorAll('.view');
     const navItems = document.querySelectorAll('.nav-item');
@@ -558,77 +564,64 @@
 
         appendMsg(prompt, 'user');
         aiInput.value = '';
-
-        const loadId = appendMsg('Gemini is processing your context...', 'loading');
+        const loadId = appendMsg('Gemini is thinking...', 'loading');
 
         try {
+            // 🌟 核心改动：赋予 AI 完全的自由，允许它使用全网知识回答任何问题
             const systemInstruction = `
-                You are the exclusive smart counselor for the Anti-Bullying Guide website.
-                CRITICAL INSTRUCTION: You must analyze the user's natural sentence intent, but you MUST ONLY reply using the website's factual content provided below. Do NOT use outside web facts.
-
-                [WEBSITE FACTS DATABASE]
-                - General Bullying Definition: Unwanted, aggressive behavior among school-aged children involving a real or perceived power imbalance, repeated over time, causing physical or mental trauma.
-                - Physical Bullying: Pushing, hitting, tripping, taking or damaging belongings. Impact: bodily injury, chronic pain, school fear.
-                - Verbal Bullying: Teasing, name-calling, insulting, malicious threats. Impact: erodes self-esteem, drops academic score.
-                - Social Bullying: Rumors, intentional exclusion, peer isolation. Impact: intense loneliness, deep depression.
-                - Cyber Bullying: Toxic messages, leaking privacy on social media. Impact: 24/7 exposure, public humiliation.
-                - Sexual Bullying: Crude words, inappropriate body gestures, unwelcome touching. Impact: intense shame, body distortion.
-                - Covert Bullying: Silent cold violence, dirty glaring, hiding behaviors behind back. Impact: paranoia, quiet mental suffering.
-                - Crisis Helplines: Emergency Police (110) ｜ National Youth Hotline (12355).
-                - Actions & Solutions: Speak up confidently and walk away, take screenshots of cyber cyberbullying for proof, block accounts, report securely to school guidance counselors.
-
-                [SECURITY PROTOCOL]
-                If the user is asking general open-ended chat topics (e.g. weather, homework, gaming, general knowledge, coding) that are NOT related to this bullying corpus, you MUST ignore your global training memory and answer EXACTLY with:
-                "I am sorry, but as the dedicated system counselor, I am strictly restricted to answering questions regarding our campus anti-bullying types, analysis, and emergency hotlines. Please try again."
+                You are a highly intelligent, helpful, and friendly AI assistant integrated into a Campus Anti-Bullying website.
+                You are free to answer ANY questions the user asks you, using your vast general knowledge base. 
+                If they ask about bullying, provide professional, empathetic, and factual advice. 
+                If they ask about history, science, coding, general trivia, or anything else, answer them freely and accurately.
             `;
 
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
                 method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-    "contents": [{
-        "parts": [{ "text": systemInstruction + "\n\nUser Question: " + prompt }]
-    }],
-    // 🌟 核心修复：强制关闭大模型对“欺凌、暴力、性”等教育敏感词的自动拦截
-    "safetySettings": [
-        { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
-        { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
-        { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
-        { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" }
-    ]
-})
+                    "contents": [{ "parts": [{ "text": systemInstruction + "\n\nUser Question: " + prompt }] }],
+                    // 保持安全拦截解除，防止正常教育内容被误杀
+                    "safetySettings": [
+                        { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
+                        { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
+                        { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
+                        { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" }
+                    ]
+                })
             });
 
             const data = await response.json();
             removeLoading(loadId);
 
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                const aiReply = data.candidates[0].content.parts[0].text;
-                appendMsg(aiReply, 'bot');
+            // 真实排错逻辑
+            if (!response.ok) {
+                appendMsg("⚠️ API Error: " + (data.error ? data.error.message : "Request failed"), 'bot');
+                return;
+            }
+
+            if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+                appendMsg(data.candidates[0].content.parts[0].text, 'bot');
+            } else if (data.promptFeedback && data.promptFeedback.blockReason) {
+                appendMsg("⚠️ Blocked by Google Safety Filters.", 'bot');
             } else {
-                appendMsg("API connected, but cloud limits reached. Please retry.", 'bot');
+                appendMsg("⚠️ Unknown API format received.", 'bot');
             }
 
         } catch (error) {
             removeLoading(loadId);
-            appendMsg("Error communicating with Gemini. Ensure your site is deployed properly.", 'bot');
-            console.error(error);
+            appendMsg("❌ Network Error: " + error.message, 'bot');
         }
     }
 
     function appendMsg(content, type) {
         const div = document.createElement('div');
         div.className = `msg ${type}`;
-        div.id = 'msg-' + Date.now();
         div.textContent = content;
         aiChatBody.appendChild(div);
         aiChatBody.scrollTop = aiChatBody.scrollHeight;
         return div.id;
     }
-
-    function removeLoading(id) {
-        const el = document.getElementById(id);
-        if (el) el.remove();
-    }
+    function removeLoading(id) { const el = document.getElementById(id); if (el) el.remove(); }
 </script>
 
 <!-- 图表模块 -->
